@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.annotations.Version;
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.HibernateValidator;
 import com.lanxi.equity.assist.InRange;
 import com.lanxi.equity.config.Status;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
@@ -21,14 +23,24 @@ public class Department extends Model<Department> {
 
     @TableId("dept_id")
     @Comment("部门编号")
-    @Pattern(regexp = "[0-9]{18}",message = "部门编号必须位18位数字")
+    @NotNull(message = "部门编号不能为Null",groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "[0-9]{18}",message = "部门编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String deptId;
 
     @Comment("部门名称")
     private String deptName;
 
     @Comment("机构编号")
-    @Pattern(regexp = "[0-9]{18}",message = "机构编号必须位18位数字")
+    @NotNull(message = "机构编号不能为Null",groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "[0-9]{18}",message = "机构编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String orgaId;
 
     @Comment("机构名称")
@@ -41,15 +53,30 @@ public class Department extends Model<Department> {
     private String deptDesc;
 
     @Comment("部门状态")
-    @InRange(clazz = Status.class,message = "部门状态必须是在Status里定义的值")
+    @NotNull(message = "部门状态不能为Null",groups = HibernateValidator.Insert.class)
+    @InRange(clazz = Status.class,message = "部门状态必须是在Status里定义的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String deptStatus;
 
     @Comment("添加日期")
-    @Pattern(regexp = "[0-9]{8}",message = "日期必须为8位数字")
+    @NotNull(message = "添加日期不能为Null",groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "[0-9]{8}",message = "日期必须为8位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String addDate;
 
     @Comment("添加时间")
-    @Pattern(regexp = "[0-6]{8}",message = "时间必须为6位数字")
+    @NotNull(message = "添加时间不能为Null",groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "[0-6]{8}",message = "时间必须为6位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String addTime;
 
     @Comment("添加者")
@@ -62,6 +89,7 @@ public class Department extends Model<Department> {
     private String backup2;
 
     @Comment("乐观锁字段")
+    @NotNull(message = "乐观锁字段不能为Null",groups = HibernateValidator.Insert.class)
     @Version
     private Long version=1l;
 

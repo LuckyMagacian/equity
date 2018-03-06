@@ -2,7 +2,12 @@ package com.lanxi.equity.entity;
 
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.HibernateValidator;
+import com.lanxi.equity.assist.InRange;
+import com.lanxi.equity.config.OperateDetailType;
+import com.lanxi.equity.config.OperateType;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
@@ -15,13 +20,30 @@ public class OperateRecord extends OrgaDeptAct{
 
     @TableId("record_id")
     @Comment("操作记录编号")
-    @Pattern(regexp = "[0-9]{18}",message = "操作记录编号必须位18位数字")
+    @NotNull(message = "操作记录编号不能为null", groups = {HibernateValidator.Insert.class})
+    @Pattern(regexp = "[0-9]{18}",message = "操作记录编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String recordId;
 
     @Comment("操作类型")
+    @NotNull(message = "操作类型不能为null", groups = {HibernateValidator.Insert.class})
+    @InRange(clazz = OperateType.class,message = "操作类型必须是在OperateType中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String operType;
 
     @Comment("操作详细类型")
+    @NotNull(message = "操作详细类型不能为null", groups = {HibernateValidator.Insert.class})
+    @InRange(clazz = OperateDetailType.class,message = "操作类型必须是在OperateDetailType中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String detailType;
 
     @Comment("操作描述")

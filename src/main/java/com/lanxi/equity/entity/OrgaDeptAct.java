@@ -6,6 +6,7 @@ import com.lanxi.equity.assist.Comment;
 import com.lanxi.equity.assist.ExtractFields;
 import com.lanxi.equity.assist.HibernateValidator;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 public abstract class OrgaDeptAct extends Model<OrgaDeptAct> {
 
     @Comment("机构编号")
-    @NotNull(message = "机构编号不能为空",groups = {HibernateValidator.Insert.class, HibernateValidator.AsArg.class})
+    @NotNull(message = "机构编号不能为null",groups = {HibernateValidator.Insert.class})
     @Pattern(regexp = "[0-9]{18}",message = "机构编号必须位18位数字", groups = {
             HibernateValidator.Insert.class,
             HibernateValidator.AsArg.class,
@@ -98,6 +99,7 @@ public abstract class OrgaDeptAct extends Model<OrgaDeptAct> {
     protected String backup2;
 
     @Comment("乐观锁字段")
+    @NotNull(message = "乐观锁字段不能为null",groups = {HibernateValidator.Insert.class, HibernateValidator.Update.class})
     @Version
     protected Long version=1L;
 

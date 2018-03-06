@@ -20,9 +20,9 @@ import java.util.stream.Stream;
 /**
  * @author yangyuanjian created in 2018/2/9 17:45
  */
-//@Aspect
-//@Component
-public class AopInertUpdateCheck {
+@Aspect
+@Component
+public class AopInsertUpdateCheck {
 
     @Pointcut("execution(* com.baomidou.mybatisplus.activerecord.Model.insert*(..))")
     private void modelInsert() {
@@ -40,20 +40,17 @@ public class AopInertUpdateCheck {
     private void mapperUpdate() {
     }
 
-    public RetMessage checkWhenUpdate(ProceedingJoinPoint proceedingJoinPoint){
-        return null;
-    }
-
-
-
+//    public RetMessage checkWhenUpdate(ProceedingJoinPoint proceedingJoinPoint){
+//        return null;
+//    }
 
     @Around("modelInsert()||modelUpdate()||mapperInsert()||mapperUpdate()")
-    public<T> T checkField(ProceedingJoinPoint proeedingJoinPoint) {
-
+    public void checkField(ProceedingJoinPoint proeedingJoinPoint) {
+        LogFactory.debug(this,"aop数据库cu校验");
         AopJob<RetMessage> job = (targetClass, targetMethod, methodArgs, joinPoint) -> {
             try {
                 List<String> checkResult = Stream.of(methodArgs)
-                                                 .map(HibernateValidator::validate)
+                                                 .map(e->HibernateValidator.validate(e,new Class[]{HibernateValidator.Insert.class, HibernateValidator.Update.class}))
                                                  .filter(set->!set.isEmpty())
                                                  .flatMap(set -> set.stream())
                                                  .filter(string->string!=null&&!string.isEmpty())
@@ -73,6 +70,39 @@ public class AopInertUpdateCheck {
                 return new RetMessage(RetCode.SYSTEM_ERROR,"服务器繁忙!");
             }
         };
-        return AopJob.workJob((AopJob<T>) job, proeedingJoinPoint);
+        RetMessage message=AopJob.workJob(job,proeedingJoinPoint);
+        if(!message.getRetCode().equals(RetCode.SUCCESS)){
+            throw new RuntimeException("参数校验不通过:"+message.getRetMessage());
+        }
     }
+
+
+//    @Around("modelInsert()||modelUpdate()||mapperInsert()||mapperUpdate()")
+//    public RetMessage checkField(ProceedingJoinPoint proeedingJoinPoint) {
+//
+//        AopJob<RetMessage> job = (targetClass, targetMethod, methodArgs, joinPoint) -> {
+//            try {
+//                List<String> checkResult = Stream.of(methodArgs)
+//                                                 .map(HibernateValidator::validate)
+//                                                 .filter(set->!set.isEmpty())
+//                                                 .flatMap(set -> set.stream())
+//                                                 .filter(string->string!=null&&!string.isEmpty())
+//                                                 .collect(Collectors.toList());
+//                if(!checkResult.isEmpty()){
+//                    return new RetMessage(RetCode.ARG_ILLEGAL, targetClass.getSimpleName() + "." + targetMethod + "参数校验不通过!", checkResult.toString());
+//                }else{
+//                    Object result=joinPoint.proceed(methodArgs);
+//                    if(result instanceof RetMessage){
+//                        return (RetMessage) result;
+//                    }else{
+//                        return new RetMessage(RetCode.SUCCESS, "", (Serializable) result);
+//                    }
+//                }
+//            } catch (Throwable e) {
+//                LogFactory.error(targetClass, targetClass + "." + targetMethod + " error when args:" + ToJson.toJson(methodArgs),e);
+//                return new RetMessage(RetCode.SYSTEM_ERROR,"服务器繁忙!");
+//            }
+//        };
+//        return AopJob.workJob(job, proeedingJoinPoint);
+//    }
 }

@@ -26,7 +26,11 @@ public class Activity extends Model<Activity> {
     @TableId("act_id")
     @Comment("活动编号")
     @NotNull(message = "活动编号不能为null", groups = HibernateValidator.Insert.class)
-    @Pattern(regexp = "[0-9]{18}", message = "活动编号必须位18位数字", groups = HibernateValidator.Update.class)
+    @Pattern(regexp = "[0-9]{18}", message = "活动编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String actId;
 
     @Comment("活动名称")
@@ -37,7 +41,11 @@ public class Activity extends Model<Activity> {
 
     @Comment("机构编号")
     @NotNull(message = "活动编号不能为null", groups = HibernateValidator.Insert.class)
-    @Pattern(regexp = "[0-9]{18}", message = "机构编号必须位18位数字", groups = HibernateValidator.Update.class)
+    @Pattern(regexp = "[0-9]{18}", message = "机构编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String orgaId;
 
     @Comment("机构名称")
@@ -45,7 +53,11 @@ public class Activity extends Model<Activity> {
     private String orgaName;
 
     @Comment("部门编号")
-    @Pattern(regexp = "[0-9]{18}", message = "部门编号必须位18位数字", groups = HibernateValidator.Update.class)
+    @Pattern(regexp = "[0-9]{18}", message = "部门编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String deptId;
 
     @Comment("部门名称")
@@ -58,36 +70,68 @@ public class Activity extends Model<Activity> {
     private String actDesc;
 
     @Comment("活动开始日期")
-    @Pattern(regexp = "[0-9]{8}", message = "日期必须为8位数字", groups = HibernateValidator.Update.class)
+    @Pattern(regexp = "[0-9]{8}", message = "日期必须为8位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String startDate;
 
     @Comment("活动开始时间")
-    @Pattern(regexp = "[0-6]{8}", message = "时间必须为6位数字", groups = HibernateValidator.Update.class)
+    @Pattern(regexp = "[0-6]{8}", message = "时间必须为6位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String startTime;
 
     @Comment("活动结束日期")
-    @Pattern(regexp = "[0-9]{8}", message = "日期必须为8位数字", groups = HibernateValidator.Update.class)
+    @Pattern(regexp = "[0-9]{8}", message = "日期必须为8位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String stopDate;
 
     @Comment("活动结束时间")
-    @Pattern(regexp = "[0-6]{8}", message = "时间必须为6位数字", groups = HibernateValidator.Update.class)
+    @Pattern(regexp = "[0-6]{8}", message = "时间必须为6位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
 
     private String stopTime;
 
     @Comment("活动状态")
-    @InRange(clazz = ActStatus.class, message = "活动状态必须是在ActStatus中声明的值", groups = {HibernateValidator.Insert.class, HibernateValidator.Update.class})
+    @InRange(clazz = ActStatus.class, message = "活动状态必须是在ActStatus中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String actStatus;
 
     @Comment("添加日期")
-    @Pattern(regexp = "[0-9]{8}", message = "日期必须为8位数字", groups = HibernateValidator.Update.class)
+    @Pattern(regexp = "[0-9]{8}", message = "日期必须为8位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String addDate;
 
     @Comment("添加时间")
-    @Pattern(regexp = "[0-6]{8}", message = "时间必须为6位数字", groups = HibernateValidator.Update.class)
+    @Pattern(regexp = "[0-6]{8}", message = "时间必须为6位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String addTime;
 
     @Comment("添加者")
-    @Pattern(regexp = "[0-9]{18}", message = "活动添加者编号必须为18位数字", groups = HibernateValidator.Update.class)
+    @Pattern(regexp = "[0-9]{18}", message = "活动添加者编号必须为18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String addBy;
 
     @Comment("备用字段1")

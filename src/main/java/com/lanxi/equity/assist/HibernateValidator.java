@@ -1,5 +1,7 @@
 package com.lanxi.equity.assist;
 
+import com.lanxi.equity.config.ConstConfig;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -21,7 +23,10 @@ public class HibernateValidator {
 
 
     @Comment("校验器工厂")
-    private static final ValidatorFactory FACTORY = Validation.buildDefaultValidatorFactory();
+    private static final ValidatorFactory FACTORY = Validation.byProvider(org.hibernate.validator.HibernateValidator.class)
+                                                              .configure()
+                                                              .addProperty("hibernate.validator.fail_fast",
+                                                                           ConstConfig.DEVELOP + "").buildValidatorFactory();
 
     @Comment("校验器")
     private static final Validator VALIDATOR = FACTORY.getValidator();

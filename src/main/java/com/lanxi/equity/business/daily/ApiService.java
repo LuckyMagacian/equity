@@ -6,6 +6,7 @@ import com.lanxi.equity.entity.ExCodeInstance;
 import com.lanxi.equity.entity.OrgaDeptAct;
 import com.lanxi.equity.entity.UserAccount;
 import com.lanxi.equity.report.api.AddEquityRes;
+import com.lanxi.equity.report.order.BaoWen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ public interface ApiService {
     RetMessage<ArrayList<AddEquityRes.DealResult>> excodeEx(OrgaDeptAct oda, UserAccount user, List<String> codes);
     RetMessage<ArrayList<ExCodeInstance>> generateExCodeInstance(ExCode exCode,int count);
 
+    RetMessage<BaoWen> couponOrder(BaoWen reqReport);
 //    RetMessage<ArrayList<AddEquityRes.DealResult>> excodeExTest(OrgaDeptAct oda,UserAccount user,List<String> codes);
 }
 

@@ -24,6 +24,9 @@ public class InRangeValidator implements ConstraintValidator<InRange, String> {
         if(value==null){
             return true;
         }
+        if(value.isEmpty()){
+            return false;
+        }
         String[] ranges = range.value();
         Class    clazz  = range.clazz();
         List<String> values =new ArrayList<>();

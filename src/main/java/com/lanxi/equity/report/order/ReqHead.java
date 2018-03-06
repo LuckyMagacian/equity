@@ -38,15 +38,15 @@ public class ReqHead implements Head{
 	/**签名 参数值拼接加上密钥 结果为小写*/
 	private String  sign;		
 	public ReqHead(){
-		ver=ConfigServiceImpl.get("giftVer");
-		chkDate= TimeUtil.getDate();
-		workDate=TimeUtil.getDate();
-		workTime=TimeUtil.getTime();
-		add= ConfigServiceImpl.get("giftAdd");
-		src=ConfigServiceImpl.get("giftSrc");
-		des=ConfigServiceImpl.get("giftDes");
-		app=ConfigServiceImpl.get("giftApp");
-		msgNo=ConfigServiceImpl.get("giftMsgNo");
+//		ver=ConfigServiceImpl.get("giftVer");
+//		chkDate= TimeUtil.getDate();
+//		workDate=TimeUtil.getDate();
+//		workTime=TimeUtil.getTime();
+//		add= ConfigServiceImpl.get("giftAdd");
+//		src=ConfigServiceImpl.get("giftSrc");
+//		des=ConfigServiceImpl.get("giftDes");
+//		app=ConfigServiceImpl.get("giftApp");
+//		msgNo=ConfigServiceImpl.get("giftMsgNo");
 	}
 	public String getVer() {
 		return ver;

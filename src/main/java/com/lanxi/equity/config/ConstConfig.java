@@ -1,11 +1,15 @@
 package com.lanxi.equity.config;
 
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.TimeAssist;
+import com.lanxi.equity.entity.Commodity;
 import com.lanxi.equity.entity.ExCode;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -20,8 +24,8 @@ public abstract class ConstConfig {
     @Comment("配置文件路径")
     public static final String STATIC_CONFIG_PATH = "classpath:properties";
 
-    @Comment("调试开关")
-    public static final boolean DEBUG = true;
+    //    @Comment("调试开关")
+    //    public static final boolean DEBUG = true;
 
     @Comment("开发开关")
     public static final boolean DEVELOP = true;
@@ -46,6 +50,12 @@ public abstract class ConstConfig {
 
     @Comment("测试用兑换码原型编号")
     public static final String TEST_CODE_ID = 100000000000000000L + "";
+//
+//    @Comment("直接使用电子礼品平台商品编号")
+//    public static final String TEST_COMMOID = "100000000000000000";
+//
+//    @Comment("商品编号转换开关")
+//    public static final boolean COMMO_ID_EX=false;
 
     @Comment("兑换码长度限制条件")
     public static final Function<ExCode, Integer> CODE_LENGTH_LIMIT = e -> (e.getP1() + "").length() + (e.getP2() + "").length();
@@ -53,6 +63,49 @@ public abstract class ConstConfig {
     @Comment("权益过期日期值默认")
     public static final int EQUITY_BE_EXPIRE_DAYS = 3;
 
+    //电子礼品平台参数
+    @Comment("电子礼品平台调用url")
+    public static final String COUPON_URL = DEVELOP ? "http://192.168.17.181:8084/jfdh/BankServlet"
+                                                    : "";
+
+    @Comment("电子礼品平台注册的SRC值")
+    public static final String COUPON_REPORT_SRC = DEVELOP ? "1000000000000000" : "1000000000000000";
+
+    @Comment("电子礼品平台注册的des值")
+    public static final String COUPON_REPORT_DES = DEVELOP ? "1000000000000000" : "1000000000000000";
+
+    @Comment("报文版本号")
+    public static final String VER = "1.0";
+
+    @Comment("消息类型")
+    public static final String MSG_NO_BUY = "1001";
+
+    @Comment("发起方地址")
+    public static final String ADD = "3301";
+
+    @Comment("平台名称")
+    public static final String APP = "蓝喜电子礼品营销平台";
+
+    @Comment("不需要平台下发短信")
+    public static final String NOT_NEED_SEND = "1";
+
+    @Comment("需要平台下发短信")
+    public static final String NEED_SEND = "0";
+
+    @Comment("测试话费商品编号")
+    public static final String TEST_CHARGE = "1001";
+
+    @Comment("测试电子券商品编号")
+    public static final String TEST_COUPON = "9876";
+
+    @Comment("消息编号计数器")
+    public static volatile Integer MSG_NO = 10000000;
+
+    @Comment("消息编号提供者")
+    public static Supplier<Integer> MSG_NO_SUPPLIER = () -> DEVELOP ? Integer.valueOf(LocalDateTime.now().getDayOfYear() - 51 + TimeAssist.now())
+                                                                    : ++MSG_NO;
+    @Comment("电子礼品平台签名密钥")
+    public static final String COUPON_SING_KEY="hzlx";
     //--------------------------------------------------变量赋值结束
 
 

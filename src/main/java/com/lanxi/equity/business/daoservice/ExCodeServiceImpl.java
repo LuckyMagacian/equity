@@ -23,6 +23,8 @@ public class ExCodeServiceImpl implements ExCodeService {
 
     @Override public List<ExCode> query(EntityWrapper<ExCode> wrapper, Page<ExCode> page) {
         wrapper.ne("code_status",CodeStatus.DELETED);
+        wrapper.orderBy("add_date",false );
+        wrapper.orderBy("add_time",false );
         return dao.query(ExCode.class,wrapper,page);
     }
 

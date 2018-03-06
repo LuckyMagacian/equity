@@ -2,9 +2,12 @@ package com.lanxi.equity.entity;
 
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.HibernateValidator;
 import com.lanxi.equity.assist.InRange;
 import com.lanxi.equity.config.ReportDealStatus;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
@@ -15,18 +18,37 @@ import java.io.Serializable;
 @Comment("报文处理记录")
 public class ReportDeal extends OrgaDeptAct {
     @Comment("报文处理记录唯一编号")
-    @Pattern(regexp = "[0-9]{18}", message = "报文处理记录编号必须位18位数字")
+    @Pattern(regexp = "[0-9]{18}", message = "报文处理记录编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     @TableId("report_id")
+    @NotNull(message = "报文处理记录唯一编号不能为null", groups = {HibernateValidator.Insert.class})
     private String reportId;
     @Comment("消息编号")
-    @Pattern(regexp = "[0-9]{18}", message = "消息编号必须位18位数字")
+    @Pattern(regexp = "[0-9]{18}", message = "消息编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
+    @NotNull(message = "消息编号不能为null",groups = HibernateValidator.Insert.class)
+    @NotEmpty(message = "消息编号不能为空", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String msgId;
     @Comment("请求xml原文")
     private String reqXml;
     @Comment("响应xml原文")
     private String resXml;
     @Comment("处理结果状态")
-    @InRange(clazz = ReportDealStatus.class,message = "报文处理状态必须是在ReportDealStatus中声明的值")
+    @InRange(clazz = ReportDealStatus.class,message = "报文处理状态必须是在ReportDealStatus中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String dealStatus;
 
 

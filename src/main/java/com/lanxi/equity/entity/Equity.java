@@ -10,6 +10,7 @@ import com.lanxi.equity.assist.ToJson;
 import com.lanxi.equity.config.EquitySource;
 import com.lanxi.equity.config.EquityStatus;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
@@ -27,7 +28,7 @@ public class Equity extends OrgaDeptAct {
 
     @TableId("equity_id")
     @Comment("权益编号")
-    @NotNull(message = "权益编号不能为空", groups = HibernateValidator.Insert.class)
+    @NotNull(message = "权益编号不能为null", groups = {HibernateValidator.Insert.class})
     @Pattern(regexp = "[0-9]{18}", message = "权益编号必须位18位数字", groups = {
             HibernateValidator.Insert.class,
             HibernateValidator.AsArg.class,
@@ -36,12 +37,13 @@ public class Equity extends OrgaDeptAct {
     private String equityId;
 
     @Comment("用户编号")
-    @NotNull(message = "用户编号不能为空", groups = {HibernateValidator.Insert.class, HibernateValidator.AsArg.class})
-    @Pattern(regexp = "[0-9]{18}", message = "用户编号必须位18位数字", groups = {
-            HibernateValidator.Insert.class,
-            HibernateValidator.AsArg.class,
-            HibernateValidator.Update.class
-    })
+    @NotNull(message = "用户编号不能为null", groups = {HibernateValidator.Insert.class})
+    @NotEmpty(message = "用户编号不能为空!", groups = {HibernateValidator.Insert.class, HibernateValidator.AsArg.class, HibernateValidator.Update.class})
+    //    @Pattern(regexp = "[0-9]{18}", message = "用户编号必须位18位数字", groups = {
+    //            HibernateValidator.Insert.class,
+    //            HibernateValidator.AsArg.class,
+    //            HibernateValidator.Update.class
+    //    })
     private String userId;
 
     @Comment("机构自定用户编号")
@@ -52,34 +54,58 @@ public class Equity extends OrgaDeptAct {
     private String userName;
 
     @Comment("权益来源")
-    @InRange(clazz = EquitySource.class, message = "权益来源必须是在EquitySource中声明的值")
+    @NotNull(message = "权益来源不能为null", groups = {HibernateValidator.Insert.class,})
+    @InRange(clazz = EquitySource.class, message = "权益来源必须是在EquitySource中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String source;
 
     @Comment("权益新增原因")
+    @NotNull(message = "权益新增原因不能为null", groups = {HibernateValidator.Insert.class,})
     private String reason;
 
     @Comment("总权益值")
+    @NotNull(message = "总权益值不能为null", groups = {HibernateValidator.Insert.class,})
     private Integer total;
 
     @Comment("剩余可用权益值")
+    @NotNull(message = "剩余可用权益值不能为null", groups = {HibernateValidator.Insert.class,})
     private Integer useful;
 
     @Comment("有效期")
+    @NotNull(message = "有效期不能为null", groups = {HibernateValidator.Insert.class,})
     private Integer validate;
 
     @Comment("过期日期")
-    @Pattern(regexp = "[0-9]{8}", message = "日期必须为8位数字")
+    @NotNull(message = "过期日期不能为null", groups = {HibernateValidator.Insert.class,})
+    @Pattern(regexp = "[0-9]{8}", message = "日期必须为8位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String overDate;
 
     @Comment("过期时间")
-    @Pattern(regexp = "[0-6]{8}", message = "时间必须为6位数字")
+    @NotNull(message = "过期时间不能为null", groups = {HibernateValidator.Insert.class,})
+    @Pattern(regexp = "[0-6]{8}", message = "时间必须为6位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String overTime;
 
     @Comment("兑换凭证列表")
     private List<String> codeTokens;
 
     @Comment("权益值状态")
-    @InRange(clazz = EquityStatus.class, message = "权益值状态必须是在EquityStatus中声明的值")
+    @NotNull(message = "权益值状态不能为null", groups = {HibernateValidator.Insert.class,})
+    @InRange(clazz = EquityStatus.class, message = "权益值状态必须是在EquityStatus中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String equityStatus;
 
     public String getEquityId() {

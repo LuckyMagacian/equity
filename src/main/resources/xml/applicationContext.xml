@@ -19,7 +19,7 @@
     <mvc:annotation-driven/>
 
     <import resource="mybatis.xml"></import>
-    <!--<import resource="quartz.xml"></import>-->
+    <import resource="quartz.xml"></import>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <!-- 设定默认编码 -->

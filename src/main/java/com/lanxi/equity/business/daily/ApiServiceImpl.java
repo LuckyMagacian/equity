@@ -13,6 +13,8 @@ import com.lanxi.equity.business.daoservice.UserAccountService;
 import com.lanxi.equity.config.*;
 import com.lanxi.equity.entity.*;
 import com.lanxi.equity.report.api.AddEquityRes;
+import com.lanxi.equity.report.order.BaoWen;
+import com.lanxi.util.entity.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,12 +44,14 @@ public class ApiServiceImpl implements ApiService {
 
     @Transactional
     @Override public RetMessage<ArrayList<AddEquityRes.DealResult>> excodeEx(OrgaDeptAct oda, UserAccount user, List<String> codes) {
+        LogFactory.info(this,"调用兑换码兑换权益,参数:"+oda+","+user+","+codes);
         //创建机构部门活动查询条件实例
         ExCodeInstance temp = new ExCodeInstance();
         temp.fromOda(oda);
         EntityWrapper<ExCodeInstance> wrapper=ConvertAssist.objToWrapper(temp);
         wrapper.in("code",codes);
         //查兑换码列表
+        LogFactory.info(this,"查询兑换码实例列表");
         List<ExCodeInstance> codeInstances = excodeInstanceService.query(wrapper, null);
         //创建处理结果列表
         ArrayList<AddEquityRes.DealResult> results = new ArrayList<>();
@@ -59,11 +63,16 @@ public class ApiServiceImpl implements ApiService {
                                                                          }
                                                                      })
                                                                      .collect(Collectors.groupingBy(e -> e.getInstanceStatus()));
+        LogFactory.info(this,"兑换码实例完成分组");
+
+
         //处理状态为normal的兑换码列表
+        LogFactory.info(this,"开始处理normal的兑换码实例");
         List<ExCodeInstance> normals=Optional.ofNullable(mapByStatus.get(CodeInstanceStatus.NORMAL))
                                              .orElse(new ArrayList<ExCodeInstance>());
         if(!normals.isEmpty()) {
             //创建权益记录
+            LogFactory.info(this,"创建权益");
             Equity equity = new Equity();
             equity.setEquityId(IdWorker.getId() + "");
             equity.setUserId(user.getUserId());
@@ -121,8 +130,10 @@ public class ApiServiceImpl implements ApiService {
             equityRecord.setAddDate(TimeAssist.today());
             equityRecord.setAddTime(TimeAssist.now());
             equityRecord.insert();
+            LogFactory.info(this,"添加权益完成");
         }
         //处理过期的
+        LogFactory.info(this,"处理过期实例");
         List<ExCodeInstance> expireds=Optional.ofNullable(mapByStatus.get(CodeInstanceStatus.OVERTIME)).orElse(new ArrayList<>());
         expireds.stream().forEach(e->{
             AddEquityRes.DealResult result   = new AddEquityRes.DealResult();
@@ -131,7 +142,9 @@ public class ApiServiceImpl implements ApiService {
             result.setDesc(ConvertAssist.extractCommentInfo(RetCode.class, "CODE_INSTACNCE_EXPIRED"));
             results.add(result);
         });
+
         //处理已使用的
+        LogFactory.info(this,"处理已使用的实例");
         List<ExCodeInstance> useds=Optional.ofNullable(mapByStatus.get(CodeInstanceStatus.USED)).orElse(new ArrayList<>());
         useds.stream().forEach(e->{
             AddEquityRes.DealResult result   = new AddEquityRes.DealResult();
@@ -141,6 +154,7 @@ public class ApiServiceImpl implements ApiService {
             results.add(result);
         });
         //处理注销的
+        LogFactory.info(this,"处理已注销的实例");
         List<ExCodeInstance> canceleds=Optional.ofNullable(mapByStatus.get(CodeInstanceStatus.CANCELED)).orElse(new ArrayList<>());
         canceleds.stream().forEach(e->{
             AddEquityRes.DealResult result   = new AddEquityRes.DealResult();
@@ -150,6 +164,7 @@ public class ApiServiceImpl implements ApiService {
             results.add(result);
         });
         //处理状态为null的
+        LogFactory.info(this,"处理null状态的实例");
         List<ExCodeInstance> unknowns=Optional.ofNullable(mapByStatus.get(CodeInstanceStatus.UNKNOWN)).orElse(new ArrayList<>());
         unknowns.stream().forEach(e->{
             AddEquityRes.DealResult result   = new AddEquityRes.DealResult();
@@ -159,6 +174,7 @@ public class ApiServiceImpl implements ApiService {
             results.add(result);
         });
         //处理codes中未查询到的兑换码
+        LogFactory.info(this,"处理未查询到的实例");
         List<String> dealedCodes=codeInstances.stream().map(e->e.getCode()).collect(Collectors.toList());
         codes.stream().filter(e->!dealedCodes.contains(e)).forEach(e->{
             AddEquityRes.DealResult result   = new AddEquityRes.DealResult();
@@ -168,14 +184,17 @@ public class ApiServiceImpl implements ApiService {
             results.add(result);
         });
         //创建返回结果
+
         RetMessage<ArrayList<AddEquityRes.DealResult>> retMessage=new RetMessage<>();
         retMessage.setRetCode(RetCode.SUCCESS);
         retMessage.setRetMessage(ConvertAssist.extractCommentInfo(RetCode.class,"SUCCESS"));
         retMessage.setDetail(results);
+        LogFactory.info(this,"生成响应结果:"+retMessage);
         return retMessage;
     }
 
     @Override public synchronized RetMessage<ArrayList<ExCodeInstance>> generateExCodeInstance(ExCode exCode, int count) {
+        LogFactory.info(this,"生成兑换码,参数:"+exCode+","+count);
         RetMessage<ArrayList<ExCodeInstance>> result=new RetMessage<>();
 
         if(exCode==null){
@@ -199,14 +218,17 @@ public class ApiServiceImpl implements ApiService {
         }
 
         List<ExCode> codes=exCodeService.query(wrapper);
+        LogFactory.info(this,"查询兑换码结果:"+codes);
         codes=ConvertAssist.optinalDeal(codes, ArrayList::new);
         if(codes.size()==0){
+            LogFactory.info(this,"兑换码原型未找到");
             result.setRetCode(RetCode.CODE_NOT_FOUND);
             result.setRetMessage(ConvertAssist.extractCommentInfo(RetCode.class,"CODE_NOT_FOUND"));
             result.setDetail(null);
             return result;
         }
         if(codes.size()>1){
+            LogFactory.info(this,"当前条件下兑换码原型不唯一");
             result.setRetCode(RetCode.CODE_MORE_THEN_ONE);
             result.setRetMessage(ConvertAssist.extractCommentInfo(RetCode.class,"CODE_MORE_THEN_ONE"));
             result.setDetail(null);
@@ -214,6 +236,7 @@ public class ApiServiceImpl implements ApiService {
         }
         ExCode code=codes.get(0);
         ArrayList<ExCodeInstance> list=new ArrayList<>();
+        LogFactory.info(this,"循环生成兑换码实例");
         while(count-->0){
             ExCodeInstance instance=new ExCodeInstance();
             instance.fromOda(code);
@@ -232,10 +255,15 @@ public class ApiServiceImpl implements ApiService {
         result.setRetCode(RetCode.SUCCESS);
         result.setRetMessage(ConvertAssist.extractCommentInfo(RetCode.class,"SUCCESS"));
         result.setDetail(list);
+        LogFactory.info(this,"完成兑换码实例创建,结果:"+result);
         return result;
     }
 
-//    @Override public RetMessage<ArrayList<AddEquityRes.DealResult>> excodeExTest(OrgaDeptAct oda, UserAccount user, List<String> codes) {
+    @Override public RetMessage<BaoWen> couponOrder(BaoWen reqReport) {
+        return null;
+    }
+
+    //    @Override public RetMessage<ArrayList<AddEquityRes.DealResult>> excodeExTest(OrgaDeptAct oda, UserAccount user, List<String> codes) {
 //        return null;
 //    }
 

@@ -99,6 +99,7 @@ public interface ArgAssist {
             return null;
         }
     };
+    Function<String,String> nullAsEmpty = s-> s == null ? "" : s;
 
     BiFunction<HttpServletRequest,String,String> getArgNE=(r,n)-> Optional.ofNullable(r.getParameter(n)).map(e->e!=null?e.trim():e).orElse(null);
 

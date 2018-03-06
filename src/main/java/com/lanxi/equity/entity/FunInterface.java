@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.Version;
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.HibernateValidator;
 import com.lanxi.equity.assist.InRange;
 import com.lanxi.equity.config.FunStatus;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
@@ -18,40 +20,65 @@ import java.io.Serializable;
 public class FunInterface extends Model<FunInterface>{
     @TableId("fun_id")
     @Comment("功能编号")
-    @Pattern(regexp = "[0-9]{18}",message = "接口编号必须位18位数字")
+    @NotNull(message = "功能编号不能为null",groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "[0-9]{18}",message = "接口编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String funId;
 
     @Comment("功能名称")
     private String funName;
 
     @Comment("权限等级")
+    @NotNull(message = "权限等级不能为null",groups = HibernateValidator.Insert.class)
     private String level;
 
     @Comment("路由路径")
+    @NotNull(message = "路由路径不能为null",groups = HibernateValidator.Insert.class)
     private String mapRoute;
 
     @Comment("所属类名")
+    @NotNull(message = "所属类名不能为null",groups = HibernateValidator.Insert.class)
     private String className;
 
     @Comment("所属方法名")
+    @NotNull(message = "所属方法名不能为null",groups = HibernateValidator.Insert.class)
     private String methodName;
 
     @Comment("功能描述")
     private String funDesc;
 
     @Comment("功能状态")
-    @InRange(clazz = FunStatus.class,message = "接口状态必须是在FunStatus中声明的值")
+    @NotNull(message = "功能状态不能为null",groups = HibernateValidator.Insert.class)
+    @InRange(clazz = FunStatus.class,message = "接口状态必须是在FunStatus中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String funStatus;
 
     @Comment("添加日期")
-    @Pattern(regexp = "[0-9]{8}",message = "日期必须为8位数字")
+    @NotNull(message = "添加日期不能为null",groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "[0-9]{8}",message = "日期必须为8位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String addDate;
 
     @Comment("添加时间")
-    @Pattern(regexp = "[0-6]{8}",message = "时间必须为6位数字")
+    @NotNull(message = "添加时间不能为null",groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "[0-6]{8}",message = "时间必须为6位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String addTime;
 
     @Comment("乐观锁字段")
+    @NotNull(message = "乐观锁字段不能为null",groups = HibernateValidator.Insert.class)
     @Version
     private Long version;
 

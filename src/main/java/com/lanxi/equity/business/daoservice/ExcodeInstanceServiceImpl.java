@@ -31,6 +31,8 @@ public class ExcodeInstanceServiceImpl implements ExcodeInstanceService {
 
     @Override public List<ExCodeInstance> query(EntityWrapper<ExCodeInstance> wrapper, Page<ExCodeInstance> page) {
         wrapper.ne("instance_status", CodeInstanceStatus.DELETED);
+        wrapper.orderBy("add_date",false );
+        wrapper.orderBy("add_time",false );
         return dao.query(ExCodeInstance.class, wrapper, page);
     }
 

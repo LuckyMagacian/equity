@@ -1,5 +1,6 @@
 package com.lanxi.equity.report.order;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import com.lanxi.equity.business.common.ConfigServiceImpl;
@@ -18,7 +19,7 @@ import org.dom4j.dom.DOMElement;
  * @author 1
  *
  */
-public class BaoWen {
+public class BaoWen implements Serializable{
 	public static final String NAME="JFDH";
 	private Head head;	/**消息头*/
 	private Msg  msg;	/**业务信息*/
@@ -100,7 +101,11 @@ public class BaoWen {
 		Map<String, String> params= BeanUtil.getParamMap(head);
 		params.putAll(BeanUtil.getParamMap(msg));
 		params.remove("sign");
-		String tempSign=SignUtil.md5LowerCase(SignUtil.mapToValueString(params) + ConfigServiceImpl.get("giftKey"), "GBK");
+		String plainText=SignUtil.mapToValueString(params) + ConstConfig.COUPON_SING_KEY;
+		if(ConstConfig.DEVELOP){
+			System.out.println(plainText);
+		}
+		String tempSign=SignUtil.md5LowerCase(plainText, "GBK");
 		head.setSign(tempSign);
 		return head.getSign();
 	}

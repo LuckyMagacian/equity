@@ -6,7 +6,9 @@ import com.lanxi.equity.config.RetCode;
 import com.lanxi.util.entity.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +18,8 @@ import java.util.stream.Stream;
 /**
  * @author yangyuanjian created in 2018/2/26 14:34
  */
+@Aspect
+@Component
 public class AopCharset {
 
     @Pointcut(value = "execution(* com.lanxi.equity.controller..*.*(javax.servlet.http.HttpServletRequest))")
@@ -25,7 +29,7 @@ public class AopCharset {
     private void httpReqRes(){};
 
 
-    @Around(value = "httpReq()||httpReqRes(")
+    @Around(value = "httpReq()||httpReqRes()")
     public String setReqUtf8(ProceedingJoinPoint proceedingJoinPoint){
         AopJob<String> job=(targetClass, targetMethod, methodArgs, joinPoint)->{
             try {
@@ -34,13 +38,18 @@ public class AopCharset {
                         HttpServletRequest req= (HttpServletRequest) e;
                         try {
                             req.setCharacterEncoding("utf-8");
+
                         } catch (UnsupportedEncodingException e1) {
                             e1.printStackTrace();
                         }
                     }
                     if(e instanceof HttpServletResponse){
                         HttpServletResponse res= (HttpServletResponse) e;
+                        LogFactory.debug(this,"插入跨域头");
                         res.setCharacterEncoding("utf-8");
+                        res.addHeader("Access-Control-Allow-Origin", "*");
+                        res.addHeader("Access-Control-Allow-Methods", "POST");
+                        res.addHeader("Access-Control-Max-Age", "1000");
                     }
                 });
                 return joinPoint.proceed(methodArgs)+"";

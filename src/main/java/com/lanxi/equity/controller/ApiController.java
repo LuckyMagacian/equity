@@ -53,6 +53,7 @@ public class ApiController {
         Document document = DocumentHelper.createDocument();
         Element  root     = document.addElement("xml");
         try {
+            LogFactory.info(this,"收到api请求");
             res.setContentType("txt/xml;charset=utf-8");
             BufferedReader reader    = new BufferedReader(new InputStreamReader(req.getInputStream(), "utf-8"));
             String         temp      = null;
@@ -61,6 +62,7 @@ public class ApiController {
                 xmlBuffer.append(temp);
             }
             xml = xmlBuffer.toString();
+            LogFactory.info(this,"api请求报文原文:"+xml);
         } catch (Throwable t) {
             LogFactory.error(this, "接收api请求报文时发生异常", t);
             try {
@@ -87,6 +89,7 @@ public class ApiController {
             body = doc.getRootElement().element("body");
             xmlReq = new Req();
             xmlReq.fromElement(head);
+            LogFactory.info(this,"api报文转换成功");
         } catch (Throwable t) {
             LogFactory.error(this, "转换api请求报文时发生异常", t);
             try {
@@ -118,7 +121,7 @@ public class ApiController {
                 res.getWriter().print(document.asXML());
                 return;
             }
-
+            LogFactory.info(this,"机构号校验通过");
             //校验签名
             String sign = head.elementTextTrim("sign");
             if (sign == null || sign.isEmpty()) {
@@ -132,7 +135,7 @@ public class ApiController {
                 res.getWriter().print(document.asXML());
                 return;
             }
-
+            LogFactory.info(this,"签名校验通过");
             //校验消息编号
             String msgId = head.elementTextTrim("msgId");
             if (msgId == null || msgId.isEmpty()) {
@@ -146,7 +149,7 @@ public class ApiController {
                 res.getWriter().print(document.asXML());
                 return;
             }
-
+            LogFactory.info(this,"消息编号校验通过");
             //发送日期
             String sendDate = head.elementTextTrim("sendDate");
             if (sendDate == null || sendDate.isEmpty()) {
@@ -175,7 +178,7 @@ public class ApiController {
                 res.getWriter().print(document.asXML());
                 return;
             }
-
+            LogFactory.info(this,"时间校验通过");
             //发送时间
             String funId = head.elementTextTrim("funId");
             if (funId == null || funId.isEmpty()) {
@@ -189,6 +192,7 @@ public class ApiController {
                 res.getWriter().print(document.asXML());
                 return;
             }
+            LogFactory.info(this,"功能编号校验通过");
             //功能编号不存在
             if (!ConstConfig.FUNIDS.contains(funId)) {
                 Res xmlRes = new Res();
@@ -200,7 +204,7 @@ public class ApiController {
                 res.getWriter().print(document.asXML());
                 return;
             }
-
+            LogFactory.info(this,"功能编号可用");
             //校验签名正确性
             String localSign = ReportSign.sign(head, body);
             if (!localSign.equals(sign)) {
@@ -212,7 +216,7 @@ public class ApiController {
                 Element headRes = xmlRes.toElement();
                 root.add(headRes);
 
-                if (ConstConfig.DEBUG || ConstConfig.DEVELOP) {
+                if (ConstConfig.DEVELOP) {
                     headRes.addElement("plainText").setText(ReportSign.plainText(head, body));
                     headRes.addElement("correctSign").setText(ReportSign.sign(head, body));
                     LogFactory.info(this, ReportSign.plainText(head, body));
@@ -220,7 +224,7 @@ public class ApiController {
                 res.getWriter().print(document.asXML());
                 return;
             }
-
+            LogFactory.info(this,"签名可用");
             //活动检测
             Activity activity = null;
             String   deptId   = head.elementTextTrim("deptId");
@@ -239,6 +243,7 @@ public class ApiController {
                 Element headRes = xmlRes.toElement();
                 root.add(headRes);
                 res.getWriter().print(document.asXML());
+                LogFactory.info(this,"活动不存在");
                 return;
             } else if (activities.size() > 1) {
                 Res xmlRes = new Res();
@@ -248,9 +253,11 @@ public class ApiController {
                 Element headRes = xmlRes.toElement();
                 root.add(headRes);
                 res.getWriter().print(document.asXML());
+                LogFactory.info(this,"参数无法确定唯一活动");
                 return;
             } else {
                 activity = activities.get(0);
+                LogFactory.info(this,"活动已获取");
             }
 
 
@@ -274,6 +281,7 @@ public class ApiController {
                     Element bodyRes=DocumentHelper.parseText(successReport.getResXml()).getRootElement().element("body");
                     root.add(bodyRes.createCopy());
                     res.getWriter().print(document.asXML());
+                    LogFactory.info(this,"消息已成功处理,响应原文:"+root.asXML());
                     return;
                 }
             } else {
@@ -292,6 +300,7 @@ public class ApiController {
                 reportDeal.setReportId(IdWorker.getId() + "");
                 reportDeal.setReqXml(document.asXML());
                 reportDeal.insert();
+                LogFactory.info(this,"新消息处理记录已创建");
             }
         } catch (Throwable t) {
             LogFactory.error(this, "校验报文参数时发生异常", t);
@@ -313,9 +322,12 @@ public class ApiController {
 
 
         try {
+            LogFactory.info(this,"调用apiinvoker");
             Document resDoc = api.invoke(xmlReq, body);
             response = resDoc.asXML();
+            LogFactory.info(this,"apiinvoker响应原文:"+resDoc.asXML());
             res.getWriter().print(response);
+            LogFactory.info(this,"请求处理完成");
             return;
         } catch (Throwable t) {
             LogFactory.error(this, "调用api请求报文时发生异常", t);

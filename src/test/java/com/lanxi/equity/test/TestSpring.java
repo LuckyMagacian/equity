@@ -1,16 +1,17 @@
 package com.lanxi.equity.test;
 
 import com.baomidou.mybatisplus.toolkit.IdWorker;
+import com.lanxi.equity.Aop.AopInsertUpdateCheck;
 import com.lanxi.equity.assist.TimeAssist;
 import com.lanxi.equity.business.common.DaoService;
 import com.lanxi.equity.config.CodeInstanceStatus;
+import com.lanxi.equity.config.CommStatus;
+import com.lanxi.equity.config.CommodityType;
 import com.lanxi.equity.config.ConstConfig;
 import com.lanxi.equity.dao.CommPictureDao;
+import com.lanxi.equity.dao.CommodityDao;
 import com.lanxi.equity.dao.EquityRecordDao;
-import com.lanxi.equity.entity.Activity;
-import com.lanxi.equity.entity.CommPicture;
-import com.lanxi.equity.entity.ExCode;
-import com.lanxi.equity.entity.ExCodeInstance;
+import com.lanxi.equity.entity.*;
 import com.lanxi.util.utils.HttpUtil;
 import com.lanxi.util.utils.LoggerUtil;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -43,7 +44,7 @@ public class TestSpring {
 
     @Before
     public void init() {
-        //        LoggerUtil.setLogLevel(LoggerUtil.LogLevel.DEBUG);
+                LoggerUtil.setLogLevel(LoggerUtil.LogLevel.DEBUG);
         LoggerUtil.init();
         ac = new ClassPathXmlApplicationContext("xml/applicationContext.xml");
     }
@@ -191,4 +192,40 @@ public class TestSpring {
             System.out.println(instance.getCode());
         }
     }
+    @Test
+    public void test8(){
+        Commodity commodity=new Commodity();
+        commodity.setCommId(IdWorker.getId()+"");
+        commodity.setEleCommId(ConstConfig.TEST_CHARGE);
+        commodity.setCommType(CommodityType.TEL_CHARGE);
+        commodity.setCommName("测试话费充值");
+        commodity.setValidate(30);
+        commodity.setUseRule("使用规则");
+        commodity.setCommDesc("测试话费充值");
+        commodity.setAddDate(TimeAssist.today());
+        commodity.setAddTime(TimeAssist.now());
+        commodity.setAddBy("whiteyang");
+        commodity.setValue(1);
+        commodity.setPrice(new BigDecimal(10));
+        commodity.setCommStatus(CommStatus.UP);
+        commodity.setVersion(1L);
+
+        commodity.insert();
+    }
+
+    @Test
+    public void test9(){
+
+        AopInsertUpdateCheck aop=ac.getBean(AopInsertUpdateCheck.class);
+
+        DaoService dao=ac.getBean(DaoService.class);
+
+        CommodityDao commDao=dao.getCommodityDao();
+
+        Commodity commodity=new Commodity();
+        commodity.setCommId(IdWorker.getId()+"");
+        commDao.insert(commodity);
+
+    }
+
 }

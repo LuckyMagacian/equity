@@ -95,7 +95,7 @@ public interface ToJson {
         return objToJsonObject(obj,null);
     }
     static JSONObject objToJsonObject(Object obj, Collection<String> c) {
-        Field[]    fields = obj.getClass().getDeclaredFields();
+        Field[]    fields = (Field[]) ExtractFields.getClassFields(obj.getClass(), true).toArray(new Field[]{});
         JSONObject jobj   = new JSONObject(new LinkedHashMap<>());
         Arrays.asList(fields)
               .stream()

@@ -1,5 +1,6 @@
 package com.lanxi.equity.test;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.toolkit.IdWorker;
@@ -11,6 +12,10 @@ import com.lanxi.equity.report.api.AddEquityReq;
 import com.lanxi.equity.report.api.ReportSign;
 import com.lanxi.equity.report.api.Req;
 import com.lanxi.equity.report.api.Res;
+import com.lanxi.equity.report.order.BaoWen;
+import com.lanxi.equity.report.order.ReqHead;
+import com.lanxi.equity.report.order.ReqMsg;
+import com.lanxi.util.utils.HttpUtil;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -31,6 +36,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -40,6 +47,9 @@ import java.util.stream.Stream;
  */
 public class TestOther {
 
+    private static int a=1;
+
+    private static Object list=new ArrayList<>();
     @Test
     public void test1() {
 
@@ -61,8 +71,9 @@ public class TestOther {
 
     @Test
     public void test4() {
-        Activity act = new Activity();
-        System.out.println(HibernateValidator.validate(act));
+        EquityExchangeRecord act = new EquityExchangeRecord();
+        act.setExStatus("111111");
+        System.out.println(HibernateValidator.validate(act, HibernateValidator.AsArg.class));
     }
 
     @Test
@@ -73,25 +84,25 @@ public class TestOther {
     @Test
     public void test6() {
         Map<String, Class> map = new LinkedHashMap<>();
-        map.put("活动", Activity.class);
-        map.put("算法", Algorithm.class);
-        map.put("商品图片", CommPicture.class);
-        map.put("商品", Commodity.class);
-        map.put("部门", Department.class);
-        map.put("权益", Equity.class);
-        map.put("权益记录", EquityRecord.class);
-        map.put("权益兑换记录", EquityExchangeRecord.class);
-        map.put("权益订单", EquityOrder.class);
-        map.put("兑换码", ExCode.class);
-        map.put("兑换码实体", ExCodeInstance.class);
-        map.put("功能接口", FunInterface.class);
-        map.put("商品分类标签", Label.class);
-        map.put("管理员账户", ManageAccount.class);
-        map.put("操作记录", OperateRecord.class);
-        //                 map.put("机构部门活动通用字段",OrgaDeptAct.class);
-        map.put("机构", Organization.class);
-        map.put("用户账户", UserAccount.class);
-
+//        map.put("活动", Activity.class);
+//        map.put("算法", Algorithm.class);
+//        map.put("商品图片", CommPicture.class);
+//        map.put("商品", Commodity.class);
+//        map.put("部门", Department.class);
+//        map.put("权益", Equity.class);
+//        map.put("权益记录", EquityRecord.class);
+//        map.put("权益兑换记录", EquityExchangeRecord.class);
+//        map.put("权益订单", EquityOrder.class);
+//        map.put("兑换码", ExCode.class);
+//        map.put("兑换码实体", ExCodeInstance.class);
+//        map.put("功能接口", FunInterface.class);
+//        map.put("商品分类标签", Label.class);
+//        map.put("管理员账户", ManageAccount.class);
+//        map.put("操作记录", OperateRecord.class);
+//        //                 map.put("机构部门活动通用字段",OrgaDeptAct.class);
+//        map.put("机构", Organization.class);
+//        map.put("用户账户", UserAccount.class);
+        map.put("返回码列表",RetCode.class);
 
         map.put("活动状态", ActStatus.class);
         map.put("商品类型", CommodityType.class);
@@ -109,7 +120,7 @@ public class TestOther {
         map.put("电子礼品平台订单状态", OrderStatus.class);
 
 
-        CNMap.ENUM_CN.entrySet().stream()
+        map.entrySet().stream()
                      .filter(e -> e.getValue().isInterface())
                      .forEach(e -> {
                          String desc = e.getKey();
@@ -128,7 +139,7 @@ public class TestOther {
                                  String comment = comments == null ? ""
                                                                    : comments.length == 1 ? comments[0]
                                                                                           : null;
-                                 System.out.format("%-20s%-20s\n", fieldValue, comment != null ? comment : Arrays.asList(comments));
+                                 System.out.format("%-40s%-20s%-20s\n",fieldName, fieldValue, comment != null ? comment : Arrays.asList(comments));
                              } catch (IllegalAccessException e1) {
                                  e1.printStackTrace();
                              }
@@ -174,7 +185,7 @@ public class TestOther {
 
     private static List<Field> getSuperFields(Class superClass, boolean includeSuper) {
         List<Field> fields = new ArrayList<>();
-        if (superClass.equals(Object.class)) {
+        if (superClass==null||superClass.equals(Object.class)) {
             return fields;
         }
 
@@ -365,7 +376,8 @@ public class TestOther {
         //获取表名
         tableName = tableName.replaceAll("[A-Z]{1}", "_$0").toLowerCase();
         sql.append(tableName + "(\n");
-        getClassFields(clazz, true)
+
+        CNMap.ENUM_CN.entrySet().stream().map(e->e.getValue()).flatMap(e->getClassFields(e,true).stream())
                 .forEach(f -> {
                     String s       = null;
                     String type    = null;
@@ -469,5 +481,78 @@ public class TestOther {
 
         Stream.generate(code::generateCode).limit(10).forEach(System.out::println);
     }
+    @Test
+    public void test23() throws InterruptedException {
+        System.out.println(ConstConfig.MSG_NO_SUPPLIER.get());
+        Thread.sleep(1000);
+        System.out.println(ConstConfig.MSG_NO_SUPPLIER.get());
+        Thread.sleep(1000);
+        System.out.println(ConstConfig.MSG_NO_SUPPLIER.get());
+        Thread.sleep(1000);
+        System.out.println(ConstConfig.MSG_NO_SUPPLIER.get());
+        Thread.sleep(1000);
+        System.out.println(ConstConfig.MSG_NO_SUPPLIER.get());
+        Thread.sleep(1000);
+        System.out.println(ConstConfig.MSG_NO_SUPPLIER.get());
+    }
+    @Test
+    public void test24(){
+        BaoWen baoWen =new BaoWen();
+        ReqHead head   =new ReqHead();
+        ReqMsg  body   =new ReqMsg();
 
+        head.setVer(ConstConfig.VER);
+        head.setAdd(ConstConfig.ADD);
+        head.setApp(ConstConfig.APP);
+        head.setMsgNo(ConstConfig.MSG_NO_BUY);
+        head.setChkDate(TimeAssist.today());
+        head.setWorkDate(TimeAssist.today());
+        head.setWorkTime(TimeAssist.now());
+        head.setSrc(ConstConfig.COUPON_REPORT_SRC);
+        head.setDes(ConstConfig.COUPON_REPORT_DES);
+
+        synchronized (ConstConfig.MSG_NO_SUPPLIER){
+            head.setMsgId(ConstConfig.MSG_NO_SUPPLIER.get()+"");
+        }
+
+        body.setCount(1+"");
+        body.setNeedSend(ConstConfig.NEED_SEND);
+        body.setPhone("15068610940");
+        body.setType(CommodityType.ELE_COUPON);
+        body.setSkuCode(CommodityType.ELE_COUPON.equals(body.getType())?ConstConfig.TEST_COUPON
+                       :CommodityType.TEL_CHARGE.equals(body.getType())?ConstConfig.TEST_CHARGE
+                       :"");
+        body.setRemark(ConstConfig.DEVELOP?"权益项目兑换测试":"权益项目兑换");
+
+        baoWen.setHead(head);
+        baoWen.setMsg(body);
+        baoWen.sign();
+        System.out.println(HttpUtil.postXml(baoWen.toDocument().asXML(),ConstConfig.COUPON_URL,"gbk"));
+    }
+
+    @Test
+    public void test25(){
+        Supplier<Integer> supplier=()->++a;
+        System.out.println(list);
+        Function<Object,Object> b=l->{
+            list=new Object();
+            System.out.println(list);
+            list=new HashMap<>();
+            System.out.println(list);
+            return list;
+        };
+        System.out.println(b.apply(list).hashCode());
+        System.out.println(list.hashCode());
+    }
+
+    @Test
+    public void test26(){
+        EquityExchangeRecord order=new EquityExchangeRecord();
+        order.setExStatus("aaa");
+        System.out.println(HibernateValidator.validate(order, HibernateValidator.AsArg.class));
+    }
+    @Test
+    public void test27(){
+
+    }
 }

@@ -22,4 +22,6 @@ public interface ExStatus {
     String CANCELED="33";
     @Comment("兑换状态-删除")
     String DELETED="40";
+    @Comment("测试")
+    String TEST="50";
 }

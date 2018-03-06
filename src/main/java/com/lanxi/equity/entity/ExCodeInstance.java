@@ -3,9 +3,11 @@ package com.lanxi.equity.entity;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.HibernateValidator;
 import com.lanxi.equity.assist.InRange;
 import com.lanxi.equity.config.CodeInstanceStatus;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
@@ -19,43 +21,76 @@ public class ExCodeInstance extends OrgaDeptAct {
 
     @TableId("instance_id")
     @Comment("实例编号")
-    @Pattern(regexp = "[0-9]{18}",message = "兑换码实例编号必须位18位数字")
+    @NotNull(message = "兑换码实例编号不能为null",groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "[0-9]{18}",message = "兑换码实例编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String instanceId;
 
     @Comment("兑换码编号")
-    @Pattern(regexp = "[0-9]{18}",message = "兑换码编号必须位18位数字")
+    @NotNull(message = "兑换码编号不能为null",groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "[0-9]{18}",message = "兑换码编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String exCodeId;
 
     @Comment("兑换码信息")
     private String exCodeInfo;
 
     @Comment("实例状态")
-    @InRange(clazz = CodeInstanceStatus.class,message = "兑换码实例状态必须是在CodeInstanceStatus中声明的值")
+    @NotNull(message = "实例状态不能为null",groups = HibernateValidator.Insert.class)
+    @InRange(clazz = CodeInstanceStatus.class,message = "兑换码实例状态必须是在CodeInstanceStatus中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String instanceStatus;
 
     @Comment("过期日期")
-    @Pattern(regexp = "[0-9]{8}",message = "日期必须为8位数字")
+    @Pattern(regexp = "[0-9]{8}",message = "日期必须为8位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String overDate;
 
     @Comment("过期时间")
-    @Pattern(regexp = "[0-6]{6}",message = "时间必须为6位数字")
+    @Pattern(regexp = "[0-6]{6}",message = "时间必须为6位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String overTime;
 
     @Comment("兑换日期")
-    @Pattern(regexp = "[0-9]{8}",message = "日期必须为8位数字")
+    @Pattern(regexp = "[0-9]{8}",message = "日期必须为8位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String exDate;
 
     @Comment("兑换时间")
-    @Pattern(regexp = "[0-6]{6}",message = "时间必须为6位数字")
+    @Pattern(regexp = "[0-6]{6}",message = "时间必须为6位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String exTime;
 
     @Comment("兑换码")
+    @NotNull(message = "兑换码不能为null",groups = HibernateValidator.Insert.class)
     private String code;
 
     @Comment("绑定手机")
     private String bindPhone;
 
     @Comment("权益值")
+    @NotNull(message = "权益值不能为null",groups = HibernateValidator.Insert.class)
     private Integer value;
 
     @Comment("有效期(天)")

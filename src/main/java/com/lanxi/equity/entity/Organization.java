@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.annotations.Version;
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.HibernateValidator;
 import com.lanxi.equity.assist.InRange;
 import com.lanxi.equity.config.Status;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
@@ -23,7 +25,12 @@ public class Organization extends Model<Organization> {
 
     @TableId("org_id")
     @Comment("机构编号")
-    @Pattern(regexp = "[0-9]{18}",message = "机构编号必须位18位数字")
+    @NotNull(message = "机构编号不能为null", groups = {HibernateValidator.Insert.class})
+    @Pattern(regexp = "[0-9]{18}",message = "机构编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String orgId;
 
     @Comment("机构名称")
@@ -36,23 +43,42 @@ public class Organization extends Model<Organization> {
     private String orgDesc;
 
     @Comment("机构状态")
-    @InRange(clazz = Status.class,message = "机构状态必须是在Status中声明的值")
+    @NotNull(message = "机构状态不能为null", groups = {HibernateValidator.Insert.class})
+    @InRange(clazz = Status.class,message = "机构状态必须是在Status中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String orgStatus;
 
     @Comment("添加者")
     private String addBy;
 
     @Comment("添加日期")
-    @Pattern(regexp = "[0-9]{8}",message = "日期必须为8位数字")
+    @NotNull(message = "添加日期不能为null", groups = {HibernateValidator.Insert.class})
+    @Pattern(regexp = "[0-9]{8}",message = "日期必须为8位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String addDate;
 
     @Comment("添加时间")
-    @Pattern(regexp = "[0-6]{8}",message = "时间必须为6位数字")
+    @NotNull(message = "添加时间不能为null", groups = {HibernateValidator.Insert.class})
+    @Pattern(regexp = "[0-6]{8}",message = "时间必须为6位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
 
     private String addTime;
 
     @Comment("电子邮箱")
-    @Email(regexp = "\\w+@\\w\\.\\w",message = "邮箱格式错误!")
+    @Email(regexp = "\\w+@\\w\\.\\w",message = "邮箱格式错误!", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String email;
 
     @Comment("联系电话")
@@ -65,6 +91,7 @@ public class Organization extends Model<Organization> {
     private String backup2;
 
     @Comment("乐观锁字段")
+    @NotNull(message = "乐观锁字段不能为null", groups = {HibernateValidator.Insert.class})
     @Version
     private Long version=1l;
 

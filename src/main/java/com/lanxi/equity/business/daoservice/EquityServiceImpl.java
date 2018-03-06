@@ -25,6 +25,8 @@ public class EquityServiceImpl implements EquityService {
 
     @Override public List<Equity> query(EntityWrapper<Equity> wrapper, Page<Equity> page) {
         wrapper.ne("equity_status",EquityStatus.DELETED);
+        wrapper.orderBy("over_date",false);
+        wrapper.orderBy("over_time",false);
         return dao.query(Equity.class, wrapper, page);
     }
 

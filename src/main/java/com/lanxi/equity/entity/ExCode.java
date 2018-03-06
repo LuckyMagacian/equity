@@ -17,50 +17,64 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 兑换码
+ *
  * @author yangyuanjian created in 2018/2/6 13:50
  */
 @Comment("兑换码")
-public class ExCode extends OrgaDeptAct{
+public class ExCode extends OrgaDeptAct {
 
     @TableId("code_id")
     @Comment("兑换码编号")
-    @Pattern(regexp = "[0-9]{18}",message = "兑换码编号必须位18位数字")
+    @NotNull(message = "兑换码编号不能为null", groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "[0-9]{18}", message = "兑换码编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String codeId;
 
     @Comment("兑换码状态")
-    @InRange(clazz = CodeStatus.class,message = "兑换码状态必须是在CodeStatus中声明的值")
+    @InRange(clazz = CodeStatus.class, message = "兑换码状态必须是在CodeStatus中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    } )
     private String codeStatus;
 
     @Comment("兑换码值")
-    @Pattern(regexp = "[0-9]{1,3}",message = "兑换码的权益值必须是1到999之间的整数")
+    @Pattern(regexp = "[0-9]{1,3}", message = "兑换码的权益值必须是1到999之间的整数", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private Integer value;
 
     @Comment("有效期")
     private String validate;
 
-//    @TableId("algo_id")
-//    @Comment("算法数据编号")
-//    @Pattern(regexp = "[0-9]{18}", message = "算法编号必须位18位数字")
-//    private String algoId;
+    //    @TableId("algo_id")
+    //    @Comment("算法数据编号")
+    //    @Pattern(regexp = "[0-9]{18}", message = "算法编号必须位18位数字")
+    //    private String algoId;
 
     @Comment("大质数p1")
-    @NotNull(message = "大质数p1不能为null",groups = HibernateValidator.Insert.class)
+    @NotNull(message = "大质数p1不能为null", groups = HibernateValidator.Insert.class)
     private Integer p1;
 
     @Comment("大质数p2")
-    @NotNull(message = "大质数p2不能为null",groups = HibernateValidator.Insert.class)
+    @NotNull(message = "大质数p2不能为null", groups = HibernateValidator.Insert.class)
     private Integer p2;
 
     @Comment("权值")
-    @NotNull(message = "权值不能为null")
+    @NotNull(message = "权值不能为null", groups = HibernateValidator.Insert.class)
     private Integer power;
 
     @Comment("大质数乘积")
-    @NotNull(message = "大质数乘积不能为null")
+    @NotNull(message = "大质数乘积不能为null", groups = HibernateValidator.Insert.class)
     private BigInteger n;
 
     @Comment("串码算法变量")
-    @NotNull(message = "算法变量不能为null")
+    @NotNull(message = "算法变量不能为null", groups = HibernateValidator.Insert.class)
     private volatile AtomicLong var;
 
     public String getValidate() {
@@ -100,16 +114,14 @@ public class ExCode extends OrgaDeptAct{
     }
 
 
-
-
     public Integer getP1() {
         return p1;
     }
 
     public void setP1(Integer p1) {
         this.p1 = p1;
-        if(p2!=null){
-            this.n=new BigInteger(((long)p1)*p2+"");
+        if (p2 != null) {
+            this.n = new BigInteger(((long) p1) * p2 + "");
         }
     }
 
@@ -119,8 +131,8 @@ public class ExCode extends OrgaDeptAct{
 
     public void setP2(Integer p2) {
         this.p2 = p2;
-        if(p1!=null){
-            this.n=new BigInteger(((long)p1)*p2+"");
+        if (p1 != null) {
+            this.n = new BigInteger(((long) p1) * p2 + "");
         }
     }
 
@@ -136,41 +148,42 @@ public class ExCode extends OrgaDeptAct{
         return n;
     }
 
-//    public void setN(BigInteger n) {
-//        this.n = n;
-//    }
+    //    public void setN(BigInteger n) {
+    //        this.n = n;
+    //    }
 
     public AtomicLong getVarProto() {
         return var;
     }
 
     public void setVarProto(AtomicLong var) {
-        this.var=var;
+        this.var = var;
     }
 
     public Long getVar() {
-        return Optional.ofNullable(this.var).map(e->e!=null?e.longValue():null).orElse(null);
+        return Optional.ofNullable(this.var).map(e -> e != null ? e.longValue() : null).orElse(null);
     }
 
     public void setVar(Long var) {
-        if(this.var==null){
-            this.var=new AtomicLong(var);
-        }else {
+        if (this.var == null) {
+            this.var = new AtomicLong(var);
+        } else {
             this.var.set(var);
         }
     }
+
     //将数据库更新提出减少数据库连接次数
-    public synchronized long generateCode(){
-        long code=generateCodeInvoke();
+    public synchronized long generateCode() {
+        long code = generateCodeInvoke();
         this.updateById();
         return code;
     }
 
-    private long  generateCodeInvoke(){
-        BigInteger bVar = new BigInteger(var.addAndGet(1)+"");
+    private long generateCodeInvoke() {
+        BigInteger bVar = new BigInteger(var.addAndGet(1) + "");
         BigInteger code = bVar.pow(power).remainder(this.n);
         //串码长度需要与两个大质数以字符串形式的相加的的长度一致
-        long lcode=(code.longValue()+"").length()!=ConstConfig.CODE_LENGTH_LIMIT.apply(this)?generateCode():code.longValue();
+        long lcode = (code.longValue() + "").length() != ConstConfig.CODE_LENGTH_LIMIT.apply(this) ? generateCode() : code.longValue();
         return lcode;
     }
 

@@ -1,29 +1,38 @@
 package com.lanxi.equity.entity;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.HibernateValidator;
 import com.lanxi.equity.assist.InRange;
+import com.lanxi.equity.assist.ToJson;
 import com.lanxi.equity.config.ExStatus;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.List;
 
 /**
  * 权益兑换记录
+ *
  * @author yangyuanjian created in 2018/2/5 20:32
  */
 @Comment("权益兑换记录")
-@TableName("qunity_exchange_record")
-public class EquityExchangeRecord extends OrgaDeptAct{
+@TableName("equity_exchange_record")
+public class EquityExchangeRecord extends OrgaDeptAct {
 
     @TableId("record_id")
     @Comment("记录编号")
-    @Pattern(regexp = "[0-9]{18}",message = "权益兑换记录编号必须位18位数字")
+    @NotNull(message = "兑换记录编号不能为null", groups = {HibernateValidator.Insert.class})
+    @Pattern(regexp = "[0-9]{18}", message = "权益兑换记录编号必须位18位数字", groups = {HibernateValidator.Insert.class, HibernateValidator.AsArg.class})
     private String recordId;
 
     @Comment("用户编号")
+    @NotNull(message = "用户编号不能为null", groups = {HibernateValidator.Insert.class})
+    @NotEmpty(message = "用户编号不能为空!", groups = {HibernateValidator.Insert.class, HibernateValidator.AsArg.class, HibernateValidator.Update.class})
     private String userId;
 
     @Comment("机构自定用户编号")
@@ -33,7 +42,8 @@ public class EquityExchangeRecord extends OrgaDeptAct{
     private String userName;
 
     @Comment("商品编号")
-    @Pattern(regexp = "[0-9]{18}",message = "编号必须位18位数字")
+    @NotNull(message = "商品编号不能为null", groups = {HibernateValidator.Insert.class})
+    @Pattern(regexp = "([0-9]{18})|([0-9]{4})", message = "编号必须为18位数字", groups = {HibernateValidator.Insert.class, HibernateValidator.AsArg.class})
     private String commId;
 
     @Comment("商品名称")
@@ -43,6 +53,7 @@ public class EquityExchangeRecord extends OrgaDeptAct{
     private String phone;
 
     @Comment("兑换数量")
+    @NotNull(message = "兑换数量不能为null", groups = {HibernateValidator.Insert.class})
     private String commNum;
 
     @Comment("串码列表")
@@ -52,7 +63,12 @@ public class EquityExchangeRecord extends OrgaDeptAct{
     private String result;
 
     @Comment("兑换状态")
-    @InRange(clazz = ExStatus.class,message = "兑换状态必须是在ExStatus中声明的值")
+    @NotNull(message = "兑换状态不能为null", groups = {HibernateValidator.Insert.class})
+    @InRange(clazz = ExStatus.class, message = "兑换状态必须是在ExStatus中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String exStatus;
 
     public String getRecordId() {
@@ -119,12 +135,20 @@ public class EquityExchangeRecord extends OrgaDeptAct{
         this.commNum = commNum;
     }
 
-    public List<String> getCodes() {
+    public List<String> getCodesProto() {
         return codes;
     }
 
-    public void setCodes(List<String> codes) {
+    public void setCodesProto(List<String> codes) {
         this.codes = codes;
+    }
+
+    public String getCodes() {
+        return JSONArray.toJSONString(this.codes);
+    }
+
+    public void setCodes(String codes) {
+        this.codes=JSONArray.parseArray(codes,String.class);
     }
 
     public String getResult() {

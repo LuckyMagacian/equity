@@ -1,6 +1,7 @@
 package com.lanxi.equity.config;
 
 import com.lanxi.equity.assist.Comment;
+import org.springframework.stereotype.Component;
 
 /**
  * 返回码
@@ -19,12 +20,14 @@ public interface RetCode {
     @Comment("全部失败")
     String FAIL="0009";
 
-    @Comment("参数非法")
-    String ARG_ILLEGAL="4001";
-
 //    @Comment("系统错误")
     @Comment("服务器繁忙")
     String SYSTEM_ERROR="9999";
+
+    @Comment("暂不支持的服务")
+    String UNSUPPORTFUN="8999";
+
+
     //API
     @Comment("api请求处理前发生异常")
     String API_EXCEPTION_BEFORE_DEAL="3001";
@@ -75,6 +78,8 @@ public interface RetCode {
     String API_MSG_HAS_DEALED_SUCCESS="3015";
 
     //兑换码实例兑换
+    @Comment("参数非法")
+    String ARG_ILLEGAL="4001";
 
     @Comment("兑换码实例过期")
     String CODE_INSTACNCE_EXPIRED="4101";
@@ -110,5 +115,47 @@ public interface RetCode {
     @Comment("请求参数校验不通过")
     String ARG_CHECK_NOT_PASS="5001";
 
+    @Comment("分页参数不是数字")
+    String PAGE_ARG_NOT_PASS="5002";
+
+    @Comment("兑换的商品不存在")
+    String COMMODITY_NOT_FOUND="5003";
+
+    @Comment("兑换商品所需权益值不足")
+    String EQUITY_NOT_ENOUGH="5004";
+
+    @Comment("权益值扣减失败")
+    String EQUITY_SUB_FAIL="5005";
+
+    @Comment("兑换商品失败")
+    String EQUITY_EXCHANGE_FAIL="5006";
+
+    @Comment("插入权益兑换记录失败")
+    String INSERT_EQUITY_EX_RECORD_FAIL="5007";
+
+    @Comment("插入权益订单失败")
+    String INSERT_EQUITY_ORDER_FAIL="5008";
+
+    @Comment("构建请求报文失败")
+    String MAKE_REPORT_FAIL="5009";
+
+    @Comment("获取报文响应失败")
+    String GET_REPORT_RESPONSE_FAIL="5010";
+
+    @Comment("更新权益兑换记录失败")
+    String UPDATE_EQUITY_EX_RECORD_FAIL="5011";
+
+    @Comment("更新权益订单失败")
+    String UPDATE_EQUITY_ORDER_FAIL="5012";
+
+    @Comment("插入权益记录失败")
+    String INSERT_EQUITY_RECORD_FAIL="5013";
+
+
+    @Comment("兑换数量应在1到99之间")
+    String COUNT_NOT_NUM="5014";
+
+    @Comment("短位商品编号不 ")
+    String SHORT_COMM_ID_NOT_UNIQUE="5015";
 
 }

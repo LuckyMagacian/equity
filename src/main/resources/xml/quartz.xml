@@ -5,7 +5,28 @@
     <bean id="tasks" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
+                <ref bean="instanceOverTime"></ref>
+                <ref bean="equityOverTime"></ref>
             </list>
         </property>
+    </bean>
+    <!--兑换码过期 每小时执行一次-->
+    <bean id="instanceOverTime" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="instanceOverTimeJob"/>
+        <property name="cronExpression" value="0 0 * * * ?"/>
+    </bean>
+    <bean id="instanceOverTimeJob"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="quartzServiceImpl"/>
+        <property name="targetMethod" value="codeInstanceOverTime"/>
+    </bean>
+
+    <!--权益过期 每小时执行一次-->
+    <bean id="equityOverTime" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="equityOverTimeJob"/>
+        <property name="cronExpression" value="0 0 * * * ?"/>
+    </bean>
+    <bean id="equityOverTimeJob"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="quartzServiceImpl"/>
+        <property name="targetMethod" value="equityOverTime"/>
     </bean>
 </beans>

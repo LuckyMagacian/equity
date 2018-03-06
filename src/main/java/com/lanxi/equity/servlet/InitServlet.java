@@ -1,5 +1,6 @@
 package com.lanxi.equity.servlet;
 
+import com.lanxi.equity.config.ConstConfig;
 import com.lanxi.util.utils.LoggerUtil;
 
 import javax.servlet.ServletConfig;
@@ -12,7 +13,12 @@ public class InitServlet extends HttpServlet {
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        LoggerUtil.setLogLevel(LoggerUtil.LogLevel.INFO);
+//        if(ConstConfig.DEVELOP){
+//            LoggerUtil.setLogLevel(LoggerUtil.LogLevel.DEBUG);
+//        }else
+            {
+            LoggerUtil.setLogLevel(LoggerUtil.LogLevel.INFO);
+        }
         LoggerUtil.init();
     }
 }

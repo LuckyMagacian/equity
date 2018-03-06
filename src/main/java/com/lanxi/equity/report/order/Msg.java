@@ -10,5 +10,4 @@ import org.dom4j.dom.DOMElement;
 public interface Msg {
 	public static final String NAME="MSG";
 	public DOMElement toElement();
-//	public Msg fromElement(Element element);
 }

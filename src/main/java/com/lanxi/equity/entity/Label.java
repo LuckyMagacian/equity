@@ -3,9 +3,11 @@ package com.lanxi.equity.entity;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.HibernateValidator;
 import com.lanxi.equity.assist.InRange;
 import com.lanxi.equity.config.LabelStatus;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
@@ -18,7 +20,12 @@ public class Label extends OrgaDeptAct{
 
     @TableId("lable_id")
     @Comment("标签编号")
-    @Pattern(regexp = "[0-9]{18}",message = "商品分类标签编号必须位18位数字")
+    @NotNull(message = "标签编号不能为null", groups = {HibernateValidator.Insert.class})
+    @Pattern(regexp = "[0-9]{18}",message = "商品分类标签编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String labelId;
 
     @Comment("标签名称")
@@ -31,7 +38,12 @@ public class Label extends OrgaDeptAct{
     private String addBy;
 
     @Comment("标签状态")
-    @InRange(clazz = LabelStatus.class,message = "标签状态必须是在LabelStatus中声明的值")
+    @NotNull(message = "标签状态不能为null", groups = {HibernateValidator.Insert.class})
+    @InRange(clazz = LabelStatus.class,message = "标签状态必须是在LabelStatus中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String labelStatus;
 
     public String getLabelId() {

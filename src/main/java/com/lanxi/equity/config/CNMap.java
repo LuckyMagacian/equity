@@ -50,5 +50,6 @@ public abstract class CNMap {
         ENUM_CN.put("功能接口状态", FunStatus.class);
         ENUM_CN.put("商品分类标签状态", LabelStatus.class);
         ENUM_CN.put("电子礼品平台订单状态", OrderStatus.class);
+        ENUM_CN.put("返回码列表",RetCode.class);
     }
 }

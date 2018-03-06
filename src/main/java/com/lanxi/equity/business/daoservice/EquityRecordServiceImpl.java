@@ -26,6 +26,8 @@ public class EquityRecordServiceImpl implements EquityRecordService {
     }
 
     @Override public List<EquityRecord> query(EntityWrapper<EquityRecord> wrapper, Page<EquityRecord> page) {
+        wrapper.orderBy("add_date",false );
+        wrapper.orderBy("add_time",false );
         return dao.query(EquityRecord.class, wrapper, page);
     }
 

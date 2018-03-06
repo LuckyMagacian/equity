@@ -2,7 +2,9 @@ package com.lanxi.equity.entity;
 
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.HibernateValidator;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
@@ -15,6 +17,7 @@ public class UserAccount extends OrgaDeptAct {
 
     @TableId("user_id")
     @Comment("用户编号")
+    @NotNull(message = "用户编号不能为null", groups = {HibernateValidator.Insert.class})
     private String userId;
 
     @Comment("机构自定用户编号")

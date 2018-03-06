@@ -5,14 +5,15 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.annotations.Version;
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.HibernateValidator;
 import com.lanxi.equity.assist.InRange;
 import com.lanxi.equity.config.CommStatus;
 import com.lanxi.equity.config.CommodityType;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -25,14 +26,24 @@ public class Commodity extends Model<Commodity> {
 
     @TableId("comm_id")
     @Comment("商品编号")
-    @Pattern(regexp = "[0-9]{18}",message = "编号必须位18位数字")
+    @NotNull(message = "商品编号不能为null",groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "([0-9]{18})|([0-9]{4})",message = "编号必须为18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String commId;
 
     @Comment("电子礼品平台商品编号")
+    @NotNull(message = "电子礼品平台商品编号不能为null",groups = HibernateValidator.Insert.class)
     private String eleCommId;
 
     @Comment("商品类型")
-    @InRange(clazz = CommodityType.class,message = "商品类型必须是在CommodityTYpe中声明的值")
+    @InRange(clazz = CommodityType.class,message = "商品类型必须是在CommodityTYpe中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String commType;
 
     @Comment("商品名称")
@@ -42,6 +53,7 @@ public class Commodity extends Model<Commodity> {
     private List<String> lables;
 
     @Comment("有效期")
+    @NotNull(message = "有效期不能为null",groups = HibernateValidator.Insert.class)
     private Integer validate;
 
     @Comment("使用规则")
@@ -63,11 +75,21 @@ public class Commodity extends Model<Commodity> {
     private Long inventory;
 
     @Comment("添加日期")
-    @Pattern(regexp = "[0-9]{8}",message = "日期必须为8位数字")
+    @Pattern(regexp = "[0-9]{8}",message = "日期必须为8位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
+    @NotNull(message = "添加日期不能为null",groups = HibernateValidator.Insert.class)
     private String addDate;
 
     @Comment("添加时间")
-    @Pattern(regexp = "[0-6]{8}",message = "时间必须为6位数字")
+    @Pattern(regexp = "[0-6]{8}",message = "时间必须为6位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
+    @NotNull(message = "添加时间不能为null",groups = HibernateValidator.Insert.class)
 
     private String addTime;
 
@@ -75,13 +97,20 @@ public class Commodity extends Model<Commodity> {
     private String addBy;
 
     @Comment("商品价值")
+    @NotNull(message = "商品价值不能为null",groups = HibernateValidator.Insert.class)
     private Integer value;
 
     @Comment("商品所需权益值")
-    private Integer price;
+    @NotNull(message = "商品所需权益值不能为null",groups = HibernateValidator.Insert.class)
+    private BigDecimal price;
 
     @Comment("商品状态")
-    @InRange(clazz = CommStatus.class,message = "商品状态必须是在CommStatus中声明的值")
+    @NotNull(message = "商品状态不能为null",groups = HibernateValidator.Insert.class)
+    @InRange(clazz = CommStatus.class,message = "商品状态必须是在CommStatus中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String commStatus;
 
     @Comment("单用户兑换上限")
@@ -231,11 +260,11 @@ public class Commodity extends Model<Commodity> {
         this.value = value;
     }
 
-    public Integer getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 

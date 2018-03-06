@@ -2,9 +2,12 @@ package com.lanxi.equity.entity;
 
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.HibernateValidator;
 import com.lanxi.equity.assist.InRange;
 import com.lanxi.equity.config.Status;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.List;
@@ -17,22 +20,35 @@ public class ManageAccount extends OrgaDeptAct {
     @TableId("user_id")
     @Comment("管理员编号")
     @Pattern(regexp = "[0-9]{18}",message = "管理员用户编号必须位18位数字")
+    @NotNull(message = "管理员编号不能为null", groups = {HibernateValidator.Insert.class})
     private String userId;
 
     @Comment("管理员姓名")
     private String userName;
 
     @Comment("管理权限等级")
+    @NotNull(message = "管理权限等级不能为null", groups = {HibernateValidator.Insert.class})
     private String level;
 
     @Comment("越级接口列表")
     private List<String> boostFuns;
 
     @Comment("账户状态")
-    @InRange(clazz = Status.class,message = "管理员账户状态必须是在Status中声明的值")
+    @NotNull(message = "账户状态不能为null", groups = {HibernateValidator.Insert.class})
+    @InRange(clazz = Status.class,message = "管理员账户状态必须是在Status中声明的值", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String accountStatus;
 
     @Comment("账户密码")
+    @NotNull(message = "账户密码不能为null", groups = {HibernateValidator.Insert.class})
+    @NotEmpty(message = "密码不能为空!", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.AsArg.class,
+            HibernateValidator.Update.class
+    })
     private String password;
 
     public String getUserId() {

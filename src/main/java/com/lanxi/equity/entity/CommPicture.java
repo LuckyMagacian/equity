@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.annotations.Version;
 import com.lanxi.equity.assist.Comment;
+import com.lanxi.equity.assist.HibernateValidator;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.*;
 import java.nio.file.Files;
@@ -21,8 +23,13 @@ import java.util.function.Function;
 public class CommPicture extends Model<CommPicture> {
 
     @TableId("comm_id")
+    @NotNull(message = "商品编号不能为Null",groups = HibernateValidator.Insert.class)
     @Comment("商品编号")
-    @Pattern(regexp = "[0-9]{18}", message = "编号必须位18位数字")
+    @Pattern(regexp = "([0-9]{18})|([0-9]{4})", message = "编号必须位18位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String commId;
 
     @Comment("最小图")
@@ -41,11 +48,21 @@ public class CommPicture extends Model<CommPicture> {
     private byte[] llPic;
 
     @Comment("添加日期")
-    @Pattern(regexp = "[0-9]{8}", message = "日期必须为8位数字")
+    @NotNull(message = "添加日期不能为Null",groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "[0-9]{8}", message = "日期必须为8位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
     private String addDate;
 
     @Comment("添加时间")
-    @Pattern(regexp = "[0-6]{8}", message = "时间必须为6位数字")
+    @NotNull(message = "添加时间不能为Null",groups = HibernateValidator.Insert.class)
+    @Pattern(regexp = "[0-6]{8}", message = "时间必须为6位数字", groups = {
+            HibernateValidator.Insert.class,
+            HibernateValidator.Update.class,
+            HibernateValidator.AsArg.class
+    })
 
     private String addTime;
 
@@ -66,6 +83,7 @@ public class CommPicture extends Model<CommPicture> {
 
     @Comment("乐观锁字段")
     @Version
+    @NotNull(message = "乐观锁字段不能为Null",groups = HibernateValidator.Insert.class)
     private Long version = 1l;
 
     public String getCommId() {
